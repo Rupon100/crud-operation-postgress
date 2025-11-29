@@ -224,10 +224,22 @@ app.get("/todos", async(req: Request, res: Response) => {
 })
 
 // get a single users all todos
-
-// update a single user todo
-
-// delete a single user todo
+app.get('/todos/:id', async(req: Request, res: Response) => {
+    try{
+        const result = await pool.query(`SELECT * FROM todos WHERE user_id=$1`, [req.params.id]);
+        console.log(result.rows[0]);
+        res.status(200).json({
+            success: true,
+            message: `All todos for id: ${req.params.id}`,
+            data: result.rows
+        })
+    }catch(err){
+        res.status(500).json({
+            success: false,
+            message: "Internal server error!"
+        })
+    }
+})
 
 
 app.use((req, res) => {

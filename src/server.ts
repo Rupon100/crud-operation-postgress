@@ -151,6 +151,30 @@ app.put("/users/:id", async(req: Request, res: Response) => {
 })
 
 
+// delete user
+app.delete("/users/:id", async(req: Request, res: Response) => {
+    try{
+        const result = await pool.query(`DELETE FROM users WHERE id = $1`, [req.params.id])
+
+        if(result.rows.length === 0){
+            res.status(404).json({
+                success: false,
+                message: `No user for ${req.params.id}`
+            })
+        }else{
+            res.status(200).send({
+                message: req.params,
+                data: "deleted successfully"
+            })
+        }
+    }catch(err: any){
+        res.status(500).json({
+            success: false,
+            message: "server error",
+            error: err.message 
+        })
+    }
+})
 
 app.listen(port, () => {
   console.log(`Application running: https://localhost:${port}`);

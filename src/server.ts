@@ -3,6 +3,7 @@ import config from "./config";
 import initDB, { pool } from "./config/db";
 import logger from "./middleware/logger";
 import { userRoutes } from "./modules/user/user.routes";
+import { todoRoutes } from "./modules/todo/todo.routes";
 
 const app = express();
 const port = config.port;
@@ -32,72 +33,28 @@ app.use("/users", userRoutes);
 
 
 // get single users
-app.get("/users", userRoutes);
+app.use("/users", userRoutes);
 
 
 // update single users
-app.put("/users", userRoutes);
+app.use("/users", userRoutes);
 
 
 // delete user
-app.delete("/users", userRoutes);
+app.use("/users", userRoutes);
 
  
 
 
 //--------todos crud--------
-app.post('/todos', async(req: Request, res: Response) => {
-    const { user_id, title } = req.body;
-    try{
-        const result = await pool.query(`INSERT INTO todos(user_id, title) VALUES($1, $2) RETURNING *`, [user_id, title]);
-        res.status(201).json({
-            success: true,
-            message: "Todo created successfully!",
-            data: result.rows[0]
-        })
-    }catch(err: any){
-        res.status(500).json({
-            success: false,
-            message: "server error!"
-        })
-    }
-})
+app.use('/todos', todoRoutes)
 
 // get todos by user
-app.get("/todos", async(req: Request, res: Response) => {
-    try{
-        const result = await pool.query(`SELECT * FROM todos`);
-        res.status(200).json({
-            success: true,
-            message: "todos retrieved successfully!",
-            data: result.rows
-        })
-    }catch(err: any){
-        res.status(500).json({
-            success: false,
-            message: err.message,
-            details: err
-        })
-    }
-})
+app.get("/todos",  todoRoutes)
 
 // get a single users all todos
-app.get('/todos/:id', async(req: Request, res: Response) => {
-    try{
-        const result = await pool.query(`SELECT * FROM todos WHERE user_id=$1`, [req.params.id]);
-        console.log(result.rows[0]);
-        res.status(200).json({
-            success: true,
-            message: `All todos for id: ${req.params.id}`,
-            data: result.rows
-        })
-    }catch(err){
-        res.status(500).json({
-            success: false,
-            message: "Internal server error!"
-        })
-    }
-})
+app.get('/todos', todoRoutes)
+
 
 
 app.use((req, res) => {

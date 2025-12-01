@@ -4,9 +4,8 @@ import { userService } from "./user.service";
 
 
 const createUser = async (req: Request, res: Response) => {
-    const {name, email} = req.body;
     try{
-        const result = await userService.createUser(name, email);
+        const result = await userService.createUser(req.body);
         console.log(result.rows[0]);
 
         res.status(200).json({
@@ -121,6 +120,6 @@ export const userControllers = {
     getSingleUser,
     updateUser,
     deleteUser,
-    
+
 }
 
